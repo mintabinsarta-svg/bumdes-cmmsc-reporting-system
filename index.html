@@ -320,6 +320,7 @@
                                             <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                                             <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pendapatan</th>
                                             <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pengeluaran</th>
+                                            <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="transaksiInternetTable" class="divide-y divide-gray-200">
@@ -431,6 +432,7 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Jual</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="barangTable" class="divide-y divide-gray-200">
@@ -544,6 +546,7 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alamat</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tarif Bulanan</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="pelangganSampahTable" class="divide-y divide-gray-200">
@@ -631,6 +634,7 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pendapatan</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pengeluaran</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="transaksiPanganTable" class="divide-y divide-gray-200">
@@ -878,6 +882,7 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penyusutan/Bulan</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Akum. Penyusutan</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nilai Buku</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="saldoAwalTable" class="divide-y divide-gray-200">
@@ -905,6 +910,7 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penyusutan/Bulan</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Akum. Penyusutan</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nilai Buku</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="asetTetapTable" class="divide-y divide-gray-200">
@@ -1038,10 +1044,41 @@
         </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 id="editModalTitle" class="text-lg font-semibold text-gray-800">Edit Data</h3>
+                    <button id="closeEditModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form id="editForm" class="space-y-4">
+                    <div id="editFormFields">
+                        <!-- Form fields akan diisi oleh JavaScript -->
+                    </div>
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                            <i class="fas fa-save mr-2"></i>Simpan Perubahan
+                        </button>
+                        <button type="button" id="cancelEdit" class="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition duration-200">
+                            <i class="fas fa-times mr-2"></i>Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Data Storage
         let currentUser = null;
         let currentRole = null;
+        let editingItem = null;
+        let editingType = null;
         let data = {
             users: {
                 admin: { password: 'admin123', role: 'admin' },
@@ -1244,6 +1281,11 @@
 
             const thisMonth = new Date().toISOString().slice(0, 7);
             document.getElementById('tanggalLaporan').value = thisMonth;
+
+            // Edit modal event listeners
+            document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
+            document.getElementById('cancelEdit').addEventListener('click', closeEditModal);
+            document.getElementById('editForm').addEventListener('submit', handleEditSubmit);
         }
 
         // Setup Saldo Awal Form Interactions
@@ -1347,6 +1389,16 @@
                     <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-900">${t.kategori || '-'}</td>
                     <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-green-600">${t.tipe === 'pendapatan' ? formatRupiah(t.jumlah) : '-'}</td>
                     <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-red-600">${t.tipe === 'pengeluaran' ? formatRupiah(t.jumlah) : '-'}</td>
+                    <td class="px-3 md:px-6 py-4 text-xs md:text-sm">
+                        <div class="flex space-x-2">
+                            <button onclick="editTransaksi('${t.id}', 'internet')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteTransaksi('${t.id}', 'internet')" class="text-red-600 hover:text-red-800 touch-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             `).join('');
         }
@@ -1442,6 +1494,16 @@
                         <span class="px-2 py-1 text-xs rounded-full ${b.stok > 10 ? 'bg-green-100 text-green-800' : b.stok > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
                             ${b.stok > 10 ? 'Tersedia' : b.stok > 0 ? 'Terbatas' : 'Habis'}
                         </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex space-x-2">
+                            <button onclick="editBarang('${b.id}')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteBarang('${b.id}')" class="text-red-600 hover:text-red-800 touch-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -1573,6 +1635,16 @@
                             ${p.status}
                         </span>
                     </td>
+                    <td class="px-6 py-4">
+                        <div class="flex space-x-2">
+                            <button onclick="editPelangganSampah('${p.id}')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deletePelangganSampah('${p.id}')" class="text-red-600 hover:text-red-800 touch-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             `).join('');
 
@@ -1649,6 +1721,16 @@
                     <td class="px-6 py-4 text-sm text-gray-900">${t.kategori || '-'}</td>
                     <td class="px-6 py-4 text-sm text-green-600">${t.tipe === 'pendapatan' ? formatRupiah(t.jumlah) : '-'}</td>
                     <td class="px-6 py-4 text-sm text-red-600">${t.tipe === 'pengeluaran' ? formatRupiah(t.jumlah) : '-'}</td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="flex space-x-2">
+                            <button onclick="editTransaksi('${t.id}', 'pangan')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteTransaksi('${t.id}', 'pangan')" class="text-red-600 hover:text-red-800 touch-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             `).join('');
         }
@@ -1856,6 +1938,16 @@
                     <td class="px-6 py-4 text-sm text-gray-900">${s.penyusutanPerBulan ? formatRupiah(s.penyusutanPerBulan) : '-'}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(s.akumulasiPenyusutan)}</td>
                     <td class="px-6 py-4 text-sm font-medium ${s.nilaiBuku > 0 ? 'text-green-600' : 'text-gray-500'}">${formatRupiah(s.nilaiBuku)}</td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="flex space-x-2">
+                            <button onclick="editSaldoAwal('${s.id}')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteSaldoAwal('${s.id}')" class="text-red-600 hover:text-red-800 touch-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             `).join('');
 
@@ -1872,6 +1964,16 @@
                     <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(a.penyusutanPerBulan)}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(a.akumulasiPenyusutan)}</td>
                     <td class="px-6 py-4 text-sm font-medium ${a.nilaiBuku > 0 ? 'text-green-600' : 'text-gray-500'}">${formatRupiah(a.nilaiBuku)}</td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="flex space-x-2">
+                            <button onclick="editAsetTetap('${a.id}')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteAsetTetap('${a.id}')" class="text-red-600 hover:text-red-800 touch-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             `).join('');
 
@@ -2296,6 +2398,382 @@
             overlay.classList.remove('active');
         });
 
+        // Edit and Delete Functions
+        function editTransaksi(id, unit) {
+            const transaksi = data.transaksi[unit].find(t => t.id == id);
+            if (!transaksi) return;
+
+            editingItem = transaksi;
+            editingType = `transaksi_${unit}`;
+
+            document.getElementById('editModalTitle').textContent = `Edit Transaksi ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
+            
+            let formFields = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                    <input type="date" name="tanggal" value="${transaksi.tanggal}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                    <input type="text" name="keterangan" value="${transaksi.keterangan}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Akun Kas</label>
+                    <select name="akunKas" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        <option value="kas_tunai" ${transaksi.akunKas === 'kas_tunai' ? 'selected' : ''}>Kas Tunai Bendahara</option>
+                        <option value="kas_bjb" ${transaksi.akunKas === 'kas_bjb' ? 'selected' : ''}>Kas di Bank BJB</option>
+                        <option value="kas_bri" ${transaksi.akunKas === 'kas_bri' ? 'selected' : ''}>Kas di Bank BRI</option>
+                        <option value="kas_mandiri" ${transaksi.akunKas === 'kas_mandiri' ? 'selected' : ''}>Kas di Bank Mandiri</option>
+                        <option value="kas_dana" ${transaksi.akunKas === 'kas_dana' ? 'selected' : ''}>Kas di Akun DANA</option>
+                    </select>
+                </div>`;
+
+            if (transaksi.kategori) {
+                formFields += `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                        <input type="text" name="kategori" value="${transaksi.kategori}" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    </div>`;
+            }
+
+            formFields += `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah (Rp)</label>
+                    <input type="number" name="jumlah" value="${transaksi.jumlah}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>`;
+
+            document.getElementById('editFormFields').innerHTML = formFields;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function editBarang(id) {
+            const barang = data.barang.find(b => b.id == id);
+            if (!barang) return;
+
+            editingItem = barang;
+            editingType = 'barang';
+
+            document.getElementById('editModalTitle').textContent = 'Edit Barang';
+            document.getElementById('editFormFields').innerHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Barang</label>
+                    <input type="text" name="nama" value="${barang.nama}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Harga Beli</label>
+                    <input type="number" name="hargaBeli" value="${barang.hargaBeli}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Harga Jual</label>
+                    <input type="number" name="hargaJual" value="${barang.hargaJual}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Stok</label>
+                    <input type="number" name="stok" value="${barang.stok}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+            `;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function editPelangganSampah(id) {
+            const pelanggan = data.pelangganSampah.find(p => p.id == id);
+            if (!pelanggan) return;
+
+            editingItem = pelanggan;
+            editingType = 'pelangganSampah';
+
+            document.getElementById('editModalTitle').textContent = 'Edit Pelanggan Sampah';
+            document.getElementById('editFormFields').innerHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Pelanggan</label>
+                    <input type="text" name="nama" value="${pelanggan.nama}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+                    <textarea name="alamat" class="w-full px-3 py-2 border border-gray-300 rounded-lg" rows="2" required>${pelanggan.alamat}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tarif Bulanan</label>
+                    <input type="number" name="tarif" value="${pelanggan.tarif}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        <option value="aktif" ${pelanggan.status === 'aktif' ? 'selected' : ''}>Aktif</option>
+                        <option value="nonaktif" ${pelanggan.status === 'nonaktif' ? 'selected' : ''}>Non-aktif</option>
+                    </select>
+                </div>
+            `;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function editSaldoAwal(id) {
+            const saldo = data.saldoAwal.find(s => s.id == id);
+            if (!saldo) return;
+
+            editingItem = saldo;
+            editingType = 'saldoAwal';
+
+            document.getElementById('editModalTitle').textContent = 'Edit Saldo Awal';
+            document.getElementById('editFormFields').innerHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                    <input type="date" name="tanggal" value="${saldo.tanggal}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Akun/Aset</label>
+                    <input type="text" name="namaAkun" value="${saldo.namaAkun}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Saldo/Nilai</label>
+                    <input type="number" name="saldo" value="${saldo.saldo}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                    <textarea name="keterangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg" rows="2">${saldo.keterangan || ''}</textarea>
+                </div>
+            `;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function editAsetTetap(id) {
+            const aset = data.asetTetap.find(a => a.id == id);
+            if (!aset) return;
+
+            editingItem = aset;
+            editingType = 'asetTetap';
+
+            document.getElementById('editModalTitle').textContent = 'Edit Aset Tetap';
+            document.getElementById('editFormFields').innerHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Pembelian</label>
+                    <input type="date" name="tanggal" value="${aset.tanggal}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Aset</label>
+                    <input type="text" name="nama" value="${aset.nama}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                    <select name="kategori" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        <option value="elektronik" ${aset.kategori === 'elektronik' ? 'selected' : ''}>Peralatan Elektronik</option>
+                        <option value="furniture" ${aset.kategori === 'furniture' ? 'selected' : ''}>Furniture & Perabot</option>
+                        <option value="kendaraan" ${aset.kategori === 'kendaraan' ? 'selected' : ''}>Kendaraan</option>
+                        <option value="bangunan" ${aset.kategori === 'bangunan' ? 'selected' : ''}>Bangunan</option>
+                        <option value="lainnya" ${aset.kategori === 'lainnya' ? 'selected' : ''}>Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Harga Perolehan</label>
+                    <input type="number" name="harga" value="${aset.harga}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Umur Ekonomis (Tahun)</label>
+                    <select name="umurEkonomis" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        <option value="2" ${aset.umurEkonomis === 2 ? 'selected' : ''}>2 Tahun</option>
+                        <option value="3" ${aset.umurEkonomis === 3 ? 'selected' : ''}>3 Tahun</option>
+                        <option value="4" ${aset.umurEkonomis === 4 ? 'selected' : ''}>4 Tahun</option>
+                        <option value="5" ${aset.umurEkonomis === 5 ? 'selected' : ''}>5 Tahun</option>
+                        <option value="8" ${aset.umurEkonomis === 8 ? 'selected' : ''}>8 Tahun</option>
+                        <option value="10" ${aset.umurEkonomis === 10 ? 'selected' : ''}>10 Tahun</option>
+                        <option value="20" ${aset.umurEkonomis === 20 ? 'selected' : ''}>20 Tahun</option>
+                    </select>
+                </div>
+            `;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function handleEditSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            if (editingType.startsWith('transaksi_')) {
+                const unit = editingType.split('_')[1];
+                const oldAkunKas = editingItem.akunKas || 'kas_tunai';
+                const newAkunKas = formData.get('akunKas');
+                const oldJumlah = editingItem.jumlah;
+                const newJumlah = parseInt(formData.get('jumlah'));
+
+                // Revert old transaction effect on kas
+                if (editingItem.tipe === 'pendapatan') {
+                    data.kas[oldAkunKas] -= oldJumlah;
+                } else {
+                    data.kas[oldAkunKas] += oldJumlah;
+                }
+
+                // Apply new transaction effect on kas
+                if (editingItem.tipe === 'pendapatan') {
+                    data.kas[newAkunKas] += newJumlah;
+                } else {
+                    // Check if new kas account has sufficient balance
+                    if (data.kas[newAkunKas] < newJumlah) {
+                        alert(`Saldo ${getKasLabel(newAkunKas)} tidak mencukupi!`);
+                        // Revert the old transaction
+                        if (editingItem.tipe === 'pendapatan') {
+                            data.kas[oldAkunKas] += oldJumlah;
+                        } else {
+                            data.kas[oldAkunKas] -= oldJumlah;
+                        }
+                        return;
+                    }
+                    data.kas[newAkunKas] -= newJumlah;
+                }
+
+                // Update transaction data
+                editingItem.tanggal = formData.get('tanggal');
+                editingItem.keterangan = formData.get('keterangan');
+                editingItem.akunKas = newAkunKas;
+                editingItem.jumlah = newJumlah;
+                if (formData.get('kategori')) {
+                    editingItem.kategori = formData.get('kategori');
+                }
+
+                if (unit === 'internet') updateTransaksiInternetTable();
+                if (unit === 'pangan') updateTransaksiPanganTable();
+            }
+            else if (editingType === 'barang') {
+                editingItem.nama = formData.get('nama');
+                editingItem.hargaBeli = parseInt(formData.get('hargaBeli'));
+                editingItem.hargaJual = parseInt(formData.get('hargaJual'));
+                editingItem.stok = parseInt(formData.get('stok'));
+                updateTokoData();
+            }
+            else if (editingType === 'pelangganSampah') {
+                editingItem.nama = formData.get('nama');
+                editingItem.alamat = formData.get('alamat');
+                editingItem.tarif = parseInt(formData.get('tarif'));
+                editingItem.status = formData.get('status');
+                updateSampahData();
+            }
+            else if (editingType === 'saldoAwal') {
+                const oldSaldo = editingItem.saldo;
+                const newSaldo = parseInt(formData.get('saldo'));
+                
+                // Update kas if it's a kas account
+                if (editingItem.jenisAkun === 'kas' && editingItem.akun) {
+                    data.kas[editingItem.akun] = data.kas[editingItem.akun] - oldSaldo + newSaldo;
+                }
+
+                editingItem.tanggal = formData.get('tanggal');
+                editingItem.namaAkun = formData.get('namaAkun');
+                editingItem.saldo = newSaldo;
+                editingItem.keterangan = formData.get('keterangan');
+                editingItem.nilaiBuku = newSaldo - editingItem.akumulasiPenyusutan;
+                
+                // Recalculate depreciation if applicable
+                if (editingItem.umurEkonomis && editingItem.umurEkonomis > 0) {
+                    editingItem.penyusutanPerBulan = newSaldo / (editingItem.umurEkonomis * 12);
+                }
+                
+                updateAdminData();
+            }
+            else if (editingType === 'asetTetap') {
+                const oldHarga = editingItem.harga;
+                const newHarga = parseInt(formData.get('harga'));
+                const oldAkunKas = editingItem.akunKas;
+                const newAkunKas = formData.get('akunKas') || oldAkunKas;
+
+                // Revert old purchase effect
+                data.kas[oldAkunKas] += oldHarga;
+
+                // Check if new kas account has sufficient balance
+                if (data.kas[newAkunKas] < newHarga) {
+                    alert(`Saldo ${getKasLabel(newAkunKas)} tidak mencukupi!`);
+                    data.kas[oldAkunKas] -= oldHarga; // Revert
+                    return;
+                }
+
+                // Apply new purchase effect
+                data.kas[newAkunKas] -= newHarga;
+
+                editingItem.tanggal = formData.get('tanggal');
+                editingItem.nama = formData.get('nama');
+                editingItem.kategori = formData.get('kategori');
+                editingItem.harga = newHarga;
+                editingItem.umurEkonomis = parseInt(formData.get('umurEkonomis'));
+                editingItem.akunKas = newAkunKas;
+                editingItem.penyusutanPerBulan = newHarga / (editingItem.umurEkonomis * 12);
+                editingItem.nilaiBuku = newHarga - editingItem.akumulasiPenyusutan;
+                
+                updateAdminData();
+            }
+
+            closeEditModal();
+            updateDashboard();
+            alert('Data berhasil diupdate!');
+        }
+
+        function deleteTransaksi(id, unit) {
+            if (!confirm('Yakin ingin menghapus transaksi ini?')) return;
+
+            const transaksi = data.transaksi[unit].find(t => t.id == id);
+            if (!transaksi) return;
+
+            // Revert kas effect
+            const akunKas = transaksi.akunKas || 'kas_tunai';
+            if (transaksi.tipe === 'pendapatan') {
+                data.kas[akunKas] -= transaksi.jumlah;
+            } else {
+                data.kas[akunKas] += transaksi.jumlah;
+            }
+
+            // Remove from array
+            data.transaksi[unit] = data.transaksi[unit].filter(t => t.id != id);
+
+            if (unit === 'internet') updateTransaksiInternetTable();
+            if (unit === 'pangan') updateTransaksiPanganTable();
+            updateDashboard();
+            alert('Transaksi berhasil dihapus!');
+        }
+
+        function deleteBarang(id) {
+            if (!confirm('Yakin ingin menghapus barang ini?')) return;
+            data.barang = data.barang.filter(b => b.id != id);
+            updateTokoData();
+            alert('Barang berhasil dihapus!');
+        }
+
+        function deletePelangganSampah(id) {
+            if (!confirm('Yakin ingin menghapus pelanggan ini?')) return;
+            data.pelangganSampah = data.pelangganSampah.filter(p => p.id != id);
+            updateSampahData();
+            alert('Pelanggan berhasil dihapus!');
+        }
+
+        function deleteSaldoAwal(id) {
+            if (!confirm('Yakin ingin menghapus saldo awal ini?')) return;
+            
+            const saldo = data.saldoAwal.find(s => s.id == id);
+            if (saldo && saldo.jenisAkun === 'kas' && saldo.akun) {
+                data.kas[saldo.akun] -= saldo.saldo;
+            }
+            
+            data.saldoAwal = data.saldoAwal.filter(s => s.id != id);
+            updateAdminData();
+            updateDashboard();
+            alert('Saldo awal berhasil dihapus!');
+        }
+
+        function deleteAsetTetap(id) {
+            if (!confirm('Yakin ingin menghapus aset tetap ini?')) return;
+            
+            const aset = data.asetTetap.find(a => a.id == id);
+            if (aset) {
+                data.kas[aset.akunKas] += aset.harga; // Return the money
+            }
+            
+            data.asetTetap = data.asetTetap.filter(a => a.id != id);
+            updateAdminData();
+            updateDashboard();
+            alert('Aset tetap berhasil dihapus!');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            editingItem = null;
+            editingType = null;
+        }
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Set today's date as default
@@ -2305,5 +2783,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9708a6de72f49a2b',t:'MTc1NTQyODI1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9708df0e66d7e785',t:'MTc1NTQzMDU2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
