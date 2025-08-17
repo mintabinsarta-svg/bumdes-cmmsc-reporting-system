@@ -662,6 +662,17 @@
                                         <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
                                     </div>
                                     <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Akun Kas Tujuan</label>
+                                        <select name="akunKas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                            <option value="">Pilih Akun Kas</option>
+                                            <option value="kas_tunai">Kas Tunai Bendahara</option>
+                                            <option value="kas_bjb">Kas di Bank BJB</option>
+                                            <option value="kas_bri">Kas di Bank BRI</option>
+                                            <option value="kas_mandiri">Kas di Bank Mandiri</option>
+                                            <option value="kas_dana">Kas di Akun DANA</option>
+                                        </select>
+                                    </div>
+                                    <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Sumber Modal</label>
                                         <select name="sumber" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
                                             <option value="">Pilih Sumber</option>
@@ -671,11 +682,11 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
-                                        <input type="text" name="keterangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                        <input type="text" name="keterangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" placeholder="Misal: Modal awal dari APBDes" required>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah</label>
-                                        <input type="number" name="jumlah" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                        <input type="number" name="jumlah" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" placeholder="0" required>
                                     </div>
                                     <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200">
                                         Tambah Modal
@@ -694,6 +705,17 @@
                                         <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" required>
                                     </div>
                                     <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Akun Kas Sumber</label>
+                                        <select name="akunKas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" required>
+                                            <option value="">Pilih Akun Kas</option>
+                                            <option value="kas_tunai">Kas Tunai Bendahara</option>
+                                            <option value="kas_bjb">Kas di Bank BJB</option>
+                                            <option value="kas_bri">Kas di Bank BRI</option>
+                                            <option value="kas_mandiri">Kas di Bank Mandiri</option>
+                                            <option value="kas_dana">Kas di Akun DANA</option>
+                                        </select>
+                                    </div>
+                                    <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Nama Aset</label>
                                         <input type="text" name="nama" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Misal: Komputer, Meja, Kendaraan" required>
                                     </div>
@@ -710,7 +732,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Harga Perolehan</label>
-                                        <input type="number" name="harga" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" required>
+                                        <input type="number" name="harga" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="0" required>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Umur Ekonomis (Tahun)</label>
@@ -790,6 +812,7 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Aset</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Beli</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sumber Kas</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Perolehan</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Umur (Tahun)</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penyusutan/Bulan</th>
@@ -1001,6 +1024,17 @@
 
         function formatDate(dateString) {
             return new Date(dateString).toLocaleDateString('id-ID');
+        }
+
+        function getKasLabel(kasKey) {
+            const kasLabels = {
+                kas_tunai: 'Kas Tunai Bendahara',
+                kas_bjb: 'Kas di Bank BJB',
+                kas_bri: 'Kas di Bank BRI',
+                kas_mandiri: 'Kas di Bank Mandiri',
+                kas_dana: 'Kas di Akun DANA'
+            };
+            return kasLabels[kasKey] || kasKey;
         }
 
         // Login System
@@ -1467,43 +1501,58 @@
         function handleTambahModal(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas');
             const modal = {
                 id: Date.now(),
                 tanggal: formData.get('tanggal'),
+                akunKas: akunKas,
                 sumber: formData.get('sumber'),
                 keterangan: formData.get('keterangan'),
                 jumlah: parseInt(formData.get('jumlah'))
             };
             
             data.modal.push(modal);
-            data.kas.kas_tunai += modal.jumlah;
+            data.kas[akunKas] += modal.jumlah;
             
             e.target.reset();
             updateAdminData();
             updateDashboard();
-            alert('Modal berhasil ditambahkan!');
+            alert('Modal berhasil ditambahkan ke ' + getKasLabel(akunKas) + '!');
         }
 
         // Aset Tetap Handlers
         function handleTambahAsetTetap(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas');
+            const harga = parseInt(formData.get('harga'));
+            
+            // Cek apakah saldo kas mencukupi
+            if (data.kas[akunKas] < harga) {
+                alert('Saldo kas tidak mencukupi! Saldo saat ini: ' + formatRupiah(data.kas[akunKas]));
+                return;
+            }
+            
             const aset = {
                 id: Date.now(),
                 tanggal: formData.get('tanggal'),
+                akunKas: akunKas,
                 nama: formData.get('nama'),
                 kategori: formData.get('kategori'),
-                harga: parseInt(formData.get('harga')),
+                harga: harga,
                 umurEkonomis: parseInt(formData.get('umurEkonomis')),
-                penyusutanPerBulan: parseInt(formData.get('harga')) / (parseInt(formData.get('umurEkonomis')) * 12),
+                penyusutanPerBulan: harga / (parseInt(formData.get('umurEkonomis')) * 12),
                 akumulasiPenyusutan: 0,
-                nilaiBuku: parseInt(formData.get('harga'))
+                nilaiBuku: harga
             };
             
             data.asetTetap.push(aset);
+            data.kas[akunKas] -= harga; // Kurangi kas sesuai akun yang dipilih
+            
             e.target.reset();
             updateAdminData();
-            alert('Aset tetap berhasil ditambahkan!');
+            updateDashboard();
+            alert('Aset tetap berhasil ditambahkan! Kas ' + getKasLabel(akunKas) + ' berkurang ' + formatRupiah(harga));
         }
 
         function handleHitungPenyusutan(e) {
@@ -1563,6 +1612,7 @@
                     <td class="px-6 py-4 text-sm text-gray-900">${a.nama}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">${a.kategori}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">${formatDate(a.tanggal)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${getKasLabel(a.akunKas || 'kas_tunai')}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(a.harga)}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">${a.umurEkonomis}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(a.penyusutanPerBulan)}</td>
@@ -1999,5 +2049,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9707ca80244a6d0a',t:'MTc1NTQxOTIzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97083cf7b2f0b58d',t:'MTc1NTQyMzkyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
