@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Laporan BUM Des CMMSC</title>
+    <meta name="description" content="Sistem Laporan Keuangan BUM Des CMMSC - Cikahuripan Makmur Mandiri Sejahtera">
+    <meta name="author" content="BUM Des CMMSC">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -637,6 +639,72 @@
                             </div>
                         </div>
 
+                        <!-- Input Aset Tetap -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Input Aset Tetap</h3>
+                                <form id="asetTetapForm" class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Pembelian</label>
+                                        <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Aset</label>
+                                        <input type="text" name="nama" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Misal: Komputer, Meja, Kendaraan" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                                        <select name="kategori" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" required>
+                                            <option value="">Pilih Kategori</option>
+                                            <option value="elektronik">Peralatan Elektronik</option>
+                                            <option value="furniture">Furniture & Perabot</option>
+                                            <option value="kendaraan">Kendaraan</option>
+                                            <option value="bangunan">Bangunan</option>
+                                            <option value="lainnya">Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Harga Perolehan</label>
+                                        <input type="number" name="harga" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Umur Ekonomis (Tahun)</label>
+                                        <select name="umurEkonomis" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" required>
+                                            <option value="">Pilih Umur</option>
+                                            <option value="2">2 Tahun</option>
+                                            <option value="3">3 Tahun</option>
+                                            <option value="4">4 Tahun</option>
+                                            <option value="5">5 Tahun</option>
+                                            <option value="8">8 Tahun</option>
+                                            <option value="10">10 Tahun</option>
+                                            <option value="20">20 Tahun</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-200">
+                                        Tambah Aset Tetap
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Hitung Penyusutan</h3>
+                                <form id="penyusutanForm" class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Periode Penyusutan</label>
+                                        <input type="month" name="periode" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" required>
+                                    </div>
+                                    <button type="submit" class="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition duration-200">
+                                        Hitung Penyusutan Bulanan
+                                    </button>
+                                </form>
+                                
+                                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                                    <h4 class="font-medium text-gray-700 mb-2">Total Penyusutan Bulan Ini</h4>
+                                    <p class="text-2xl font-bold text-orange-600" id="totalPenyusutanBulan">Rp 0</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Upload Gambar -->
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4">Upload Gambar</h3>
@@ -662,6 +730,32 @@
                                         <!-- Preview akan ditampilkan di sini -->
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Daftar Aset Tetap -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                            <div class="p-6 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-800">Daftar Aset Tetap & Penyusutan</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Aset</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Beli</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Perolehan</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Umur (Tahun)</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penyusutan/Bulan</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Akum. Penyusutan</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nilai Buku</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="asetTetapTable" class="divide-y divide-gray-200">
+                                        <!-- Data akan diisi oleh JavaScript -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -817,7 +911,9 @@
             },
             barang: [],
             pelangganSampah: [],
-            penjualan: []
+            penjualan: [],
+            asetTetap: [],
+            penyusutan: []
         };
 
         // Menu Configuration
@@ -962,6 +1058,8 @@
             // Admin Forms
             document.getElementById('saldoAwalForm').addEventListener('submit', handleSaldoAwal);
             document.getElementById('modalForm').addEventListener('submit', handleTambahModal);
+            document.getElementById('asetTetapForm').addEventListener('submit', handleTambahAsetTetap);
+            document.getElementById('penyusutanForm').addEventListener('submit', handleHitungPenyusutan);
 
             // Laporan
             document.getElementById('generateLaporan').addEventListener('click', generateLaporan);
@@ -1341,7 +1439,93 @@
             alert('Modal berhasil ditambahkan!');
         }
 
+        // Aset Tetap Handlers
+        function handleTambahAsetTetap(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const aset = {
+                id: Date.now(),
+                tanggal: formData.get('tanggal'),
+                nama: formData.get('nama'),
+                kategori: formData.get('kategori'),
+                harga: parseInt(formData.get('harga')),
+                umurEkonomis: parseInt(formData.get('umurEkonomis')),
+                penyusutanPerBulan: parseInt(formData.get('harga')) / (parseInt(formData.get('umurEkonomis')) * 12),
+                akumulasiPenyusutan: 0,
+                nilaiBuku: parseInt(formData.get('harga'))
+            };
+            
+            data.asetTetap.push(aset);
+            e.target.reset();
+            updateAdminData();
+            alert('Aset tetap berhasil ditambahkan!');
+        }
+
+        function handleHitungPenyusutan(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const periode = formData.get('periode');
+            
+            let totalPenyusutanBulan = 0;
+            
+            data.asetTetap.forEach(aset => {
+                const tanggalBeli = new Date(aset.tanggal);
+                const periodePenyusutan = new Date(periode + '-01');
+                
+                // Hitung penyusutan jika aset sudah dibeli sebelum periode
+                if (tanggalBeli <= periodePenyusutan) {
+                    const penyusutanBulan = aset.penyusutanPerBulan;
+                    
+                    // Cek apakah sudah mencapai batas umur ekonomis
+                    const bulanSejakBeli = (periodePenyusutan.getFullYear() - tanggalBeli.getFullYear()) * 12 + 
+                                          (periodePenyusutan.getMonth() - tanggalBeli.getMonth());
+                    
+                    if (bulanSejakBeli < aset.umurEkonomis * 12) {
+                        totalPenyusutanBulan += penyusutanBulan;
+                        
+                        // Update akumulasi penyusutan dan nilai buku
+                        aset.akumulasiPenyusutan = Math.min(
+                            aset.akumulasiPenyusutan + penyusutanBulan,
+                            aset.harga
+                        );
+                        aset.nilaiBuku = aset.harga - aset.akumulasiPenyusutan;
+                    }
+                }
+            });
+            
+            // Simpan penyusutan ke transaksi
+            const penyusutanEntry = {
+                id: Date.now(),
+                periode: periode,
+                totalPenyusutan: totalPenyusutanBulan,
+                tanggal: new Date().toISOString().split('T')[0]
+            };
+            
+            data.penyusutan.push(penyusutanEntry);
+            
+            // Update display
+            document.getElementById('totalPenyusutanBulan').textContent = formatRupiah(totalPenyusutanBulan);
+            updateAdminData();
+            
+            alert(`Penyusutan untuk periode ${periode} berhasil dihitung: ${formatRupiah(totalPenyusutanBulan)}`);
+        }
+
         function updateAdminData() {
+            // Update aset tetap table
+            const tbody = document.getElementById('asetTetapTable');
+            tbody.innerHTML = data.asetTetap.map(a => `
+                <tr>
+                    <td class="px-6 py-4 text-sm text-gray-900">${a.nama}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${a.kategori}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatDate(a.tanggal)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(a.harga)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${a.umurEkonomis}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(a.penyusutanPerBulan)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(a.akumulasiPenyusutan)}</td>
+                    <td class="px-6 py-4 text-sm font-medium ${a.nilaiBuku > 0 ? 'text-green-600' : 'text-gray-500'}">${formatRupiah(a.nilaiBuku)}</td>
+                </tr>
+            `).join('');
+
             // Update kas display
             const kasDisplay = document.getElementById('kasDisplay');
             const kasLabels = {
@@ -1376,10 +1560,16 @@
                 ...data.transaksi.pangan.filter(t => t.tipe === 'pengeluaran')
             ].reduce((sum, t) => sum + t.jumlah, 0);
 
+            // Tambahkan beban penyusutan ke pengeluaran
+            const totalPenyusutan = data.penyusutan.reduce((sum, p) => sum + p.totalPenyusutan, 0);
+            const totalPengeluaranDenganPenyusutan = totalPengeluaran + totalPenyusutan;
+
             const totalModal = data.modal.reduce((sum, m) => sum + m.jumlah, 0);
             const totalKas = Object.values(data.kas).reduce((sum, k) => sum + k, 0);
-            const totalAset = totalKas + (data.barang.reduce((sum, b) => sum + (b.stok * b.hargaBeli), 0));
-            const labaBersih = totalPendapatan - totalPengeluaran;
+            const totalInventory = data.barang.reduce((sum, b) => sum + (b.stok * b.hargaBeli), 0);
+            const totalAsetTetap = data.asetTetap.reduce((sum, a) => sum + a.nilaiBuku, 0);
+            const totalAset = totalKas + totalInventory + totalAsetTetap;
+            const labaBersih = totalPendapatan - totalPengeluaranDenganPenyusutan;
 
             // Update dashboard cards
             document.getElementById('totalAset').textContent = formatRupiah(totalAset);
@@ -1447,7 +1637,10 @@
         function generateNeraca() {
             const totalKas = Object.values(data.kas).reduce((sum, k) => sum + k, 0);
             const totalInventory = data.barang.reduce((sum, b) => sum + (b.stok * b.hargaBeli), 0);
-            const totalAset = totalKas + totalInventory;
+            const totalAsetTetapBruto = data.asetTetap.reduce((sum, a) => sum + a.harga, 0);
+            const totalAkumulasiPenyusutan = data.asetTetap.reduce((sum, a) => sum + a.akumulasiPenyusutan, 0);
+            const totalAsetTetapNeto = totalAsetTetapBruto - totalAkumulasiPenyusutan;
+            const totalAset = totalKas + totalInventory + totalAsetTetapNeto;
             const totalModal = data.modal.reduce((sum, m) => sum + m.jumlah, 0);
             
             const totalPendapatan = [
@@ -1463,7 +1656,8 @@
                 ...data.transaksi.pangan.filter(t => t.tipe === 'pengeluaran')
             ].reduce((sum, t) => sum + t.jumlah, 0);
 
-            const labaDitahan = totalPendapatan - totalPengeluaran;
+            const totalPenyusutan = data.penyusutan.reduce((sum, p) => sum + p.totalPenyusutan, 0);
+            const labaDitahan = totalPendapatan - totalPengeluaran - totalPenyusutan;
             const totalEkuitas = totalModal + labaDitahan;
 
             document.getElementById('neracaAset').innerHTML = `
@@ -1474,6 +1668,18 @@
                 <div class="flex justify-between">
                     <span>Persediaan</span>
                     <span>${formatRupiah(totalInventory)}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Aset Tetap (Bruto)</span>
+                    <span>${formatRupiah(totalAsetTetapBruto)}</span>
+                </div>
+                <div class="flex justify-between ml-4">
+                    <span>Akumulasi Penyusutan</span>
+                    <span>(${formatRupiah(totalAkumulasiPenyusutan)})</span>
+                </div>
+                <div class="flex justify-between ml-4 font-medium">
+                    <span>Aset Tetap (Neto)</span>
+                    <span>${formatRupiah(totalAsetTetapNeto)}</span>
                 </div>
                 <div class="flex justify-between font-bold border-t pt-2">
                     <span>TOTAL ASET</span>
@@ -1507,7 +1713,8 @@
             const pengeluaranInternet = data.transaksi.internet.filter(t => t.tipe === 'pengeluaran').reduce((sum, t) => sum + t.jumlah, 0);
             const pengeluaranSampah = data.transaksi.sampah.filter(t => t.tipe === 'pengeluaran').reduce((sum, t) => sum + t.jumlah, 0);
             const pengeluaranPangan = data.transaksi.pangan.filter(t => t.tipe === 'pengeluaran').reduce((sum, t) => sum + t.jumlah, 0);
-            const totalPengeluaran = pengeluaranInternet + pengeluaranSampah + pengeluaranPangan;
+            const bebanPenyusutan = data.penyusutan.reduce((sum, p) => sum + p.totalPenyusutan, 0);
+            const totalPengeluaran = pengeluaranInternet + pengeluaranSampah + pengeluaranPangan + bebanPenyusutan;
 
             const labaBersih = totalPendapatan - totalPengeluaran;
 
@@ -1546,6 +1753,10 @@
                 <div class="flex justify-between ml-4">
                     <span>Beban Unit Pangan</span>
                     <span>${formatRupiah(pengeluaranPangan)}</span>
+                </div>
+                <div class="flex justify-between ml-4">
+                    <span>Beban Penyusutan</span>
+                    <span>${formatRupiah(bebanPenyusutan)}</span>
                 </div>
                 <div class="flex justify-between font-semibold border-t pt-2">
                     <span>TOTAL BEBAN</span>
@@ -1727,6 +1938,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9706fde284a6ea85',t:'MTc1NTQxMDg1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'970729c84100ea81',t:'MTc1NTQxMjY1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
