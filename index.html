@@ -103,7 +103,7 @@
             
             <div class="mt-6 text-center text-xs text-gray-500">
                 <p>Email: cmmsc.cikahuripan@gmail.com</p>
-                <p>HP: 082125415593</p>
+                <p>HP: 082154127777</p>
             </div>
         </div>
     </div>
@@ -240,6 +240,16 @@
                                         <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
                                     </div>
                                     <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Akun Kas Tujuan</label>
+                                        <select name="akunKas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                            <option value="kas_tunai">Kas Tunai Bendahara</option>
+                                            <option value="kas_bjb">Kas di Bank BJB</option>
+                                            <option value="kas_bri">Kas di Bank BRI</option>
+                                            <option value="kas_mandiri">Kas di Bank Mandiri</option>
+                                            <option value="kas_dana">Kas di Akun DANA</option>
+                                        </select>
+                                    </div>
+                                    <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
                                         <input type="text" name="keterangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" placeholder="Misal: Pembayaran internet bulan Januari" required>
                                     </div>
@@ -260,6 +270,16 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
                                         <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Akun Kas Sumber</label>
+                                        <select name="akunKas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                            <option value="kas_tunai">Kas Tunai Bendahara</option>
+                                            <option value="kas_bjb">Kas di Bank BJB</option>
+                                            <option value="kas_bri">Kas di Bank BRI</option>
+                                            <option value="kas_mandiri">Kas di Bank Mandiri</option>
+                                            <option value="kas_dana">Kas di Akun DANA</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
@@ -296,6 +316,7 @@
                                         <tr>
                                             <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
                                             <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+                                            <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Akun Kas</th>
                                             <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                                             <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pendapatan</th>
                                             <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pengeluaran</th>
@@ -633,9 +654,26 @@
                                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Input Saldo Awal</h3>
                                 <form id="saldoAwalForm" class="space-y-4">
                                     <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Saldo Awal</label>
+                                        <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Akun</label>
+                                        <select name="jenisAkun" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                            <option value="">Pilih Jenis Akun</option>
+                                            <option value="kas">Kas & Setara Kas</option>
+                                            <option value="aset_lancar">Aset Lancar Lainnya</option>
+                                            <option value="peralatan">Peralatan</option>
+                                            <option value="bangunan">Bangunan</option>
+                                            <option value="kendaraan">Kendaraan</option>
+                                            <option value="tanah">Tanah</option>
+                                            <option value="aset_tetap_lain">Aset Tetap Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div id="kasAkunDiv" class="hidden">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Akun Kas</label>
-                                        <select name="akun" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                                            <option value="">Pilih Akun</option>
+                                        <select name="akun" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Pilih Akun Kas</option>
                                             <option value="kas_tunai">Kas Tunai Bendahara</option>
                                             <option value="kas_bjb">Kas di Bank BJB</option>
                                             <option value="kas_bri">Kas di Bank BRI</option>
@@ -644,11 +682,33 @@
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Saldo Awal</label>
-                                        <input type="number" name="saldo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Akun/Aset</label>
+                                        <input type="text" name="namaAkun" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Misal: Komputer, Gedung Kantor, Mobil Operasional" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Saldo/Nilai Awal</label>
+                                        <input type="number" name="saldo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="0" required>
+                                    </div>
+                                    <div id="umurEkonomisDiv" class="hidden">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Umur Ekonomis (Tahun)</label>
+                                        <select name="umurEkonomis" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Pilih Umur</option>
+                                            <option value="2">2 Tahun</option>
+                                            <option value="3">3 Tahun</option>
+                                            <option value="4">4 Tahun</option>
+                                            <option value="5">5 Tahun</option>
+                                            <option value="8">8 Tahun</option>
+                                            <option value="10">10 Tahun</option>
+                                            <option value="20">20 Tahun</option>
+                                            <option value="0">Tidak Disusutkan (Tanah)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                                        <textarea name="keterangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" rows="2" placeholder="Keterangan tambahan (opsional)"></textarea>
                                     </div>
                                     <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200">
-                                        Set Saldo Awal
+                                        Simpan Saldo Awal
                                     </button>
                                 </form>
                             </div>
@@ -797,6 +857,33 @@
                                         <!-- Preview akan ditampilkan di sini -->
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Daftar Saldo Awal -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                            <div class="p-6 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-800">Daftar Saldo Awal & Aset</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis Akun</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Akun/Aset</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Akun Kas</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nilai Awal</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Umur (Tahun)</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penyusutan/Bulan</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Akum. Penyusutan</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nilai Buku</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="saldoAwalTable" class="divide-y divide-gray-200">
+                                        <!-- Data akan diisi oleh JavaScript -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -970,6 +1057,7 @@
                 kas_mandiri: 0,
                 kas_dana: 0
             },
+            saldoAwal: [],
             modal: [],
             transaksi: {
                 internet: [],
@@ -1145,6 +1233,9 @@
             document.getElementById('exportPDF').addEventListener('click', exportToPDF);
             document.getElementById('printLaporan').addEventListener('click', printLaporan);
 
+            // Form interactions
+            setupSaldoAwalFormInteractions();
+
             // Set default dates
             const today = new Date().toISOString().split('T')[0];
             document.querySelectorAll('input[type="date"]').forEach(input => {
@@ -1155,48 +1246,95 @@
             document.getElementById('tanggalLaporan').value = thisMonth;
         }
 
+        // Setup Saldo Awal Form Interactions
+        function setupSaldoAwalFormInteractions() {
+            const jenisAkunSelect = document.querySelector('#saldoAwalForm select[name="jenisAkun"]');
+            const kasAkunDiv = document.getElementById('kasAkunDiv');
+            const umurEkonomisDiv = document.getElementById('umurEkonomisDiv');
+            const kasAkunSelect = document.querySelector('#saldoAwalForm select[name="akun"]');
+            const umurEkonomisSelect = document.querySelector('#saldoAwalForm select[name="umurEkonomis"]');
+
+            jenisAkunSelect.addEventListener('change', function() {
+                const jenisAkun = this.value;
+                
+                // Show/hide kas akun dropdown
+                if (jenisAkun === 'kas') {
+                    kasAkunDiv.classList.remove('hidden');
+                    kasAkunSelect.required = true;
+                } else {
+                    kasAkunDiv.classList.add('hidden');
+                    kasAkunSelect.required = false;
+                    kasAkunSelect.value = '';
+                }
+
+                // Show/hide umur ekonomis for aset tetap
+                if (['peralatan', 'bangunan', 'kendaraan', 'aset_tetap_lain'].includes(jenisAkun)) {
+                    umurEkonomisDiv.classList.remove('hidden');
+                    umurEkonomisSelect.required = true;
+                } else {
+                    umurEkonomisDiv.classList.add('hidden');
+                    umurEkonomisSelect.required = false;
+                    umurEkonomisSelect.value = '';
+                }
+            });
+        }
+
         // Unit Internet Handlers
         function handlePendapatanInternet(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
+            const jumlah = parseInt(formData.get('jumlah'));
+            
             const transaksi = {
                 id: Date.now(),
                 tanggal: formData.get('tanggal'),
                 keterangan: formData.get('keterangan'),
-                jumlah: parseInt(formData.get('jumlah')),
+                jumlah: jumlah,
+                akunKas: akunKas,
                 tipe: 'pendapatan',
                 unit: 'internet'
             };
             
             data.transaksi.internet.push(transaksi);
-            data.kas.kas_tunai += transaksi.jumlah;
+            data.kas[akunKas] += jumlah; // Update kas sesuai akun yang dipilih
             
             e.target.reset();
             updateTransaksiInternetTable();
             updateDashboard();
-            alert('Pendapatan berhasil disimpan!');
+            alert(`Pendapatan berhasil disimpan ke ${getKasLabel(akunKas)}!`);
         }
 
         function handlePengeluaranInternet(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
+            const jumlah = parseInt(formData.get('jumlah'));
+            
+            // Cek saldo kas mencukupi
+            if (data.kas[akunKas] < jumlah) {
+                alert(`Saldo ${getKasLabel(akunKas)} tidak mencukupi! Saldo saat ini: ${formatRupiah(data.kas[akunKas])}`);
+                return;
+            }
+            
             const transaksi = {
                 id: Date.now(),
                 tanggal: formData.get('tanggal'),
                 keterangan: formData.get('keterangan'),
                 kategori: formData.get('kategori'),
-                jumlah: parseInt(formData.get('jumlah')),
+                jumlah: jumlah,
+                akunKas: akunKas,
                 tipe: 'pengeluaran',
                 unit: 'internet'
             };
             
             data.transaksi.internet.push(transaksi);
-            data.kas.kas_tunai -= transaksi.jumlah;
+            data.kas[akunKas] -= jumlah; // Kurangi kas sesuai akun yang dipilih
             
             e.target.reset();
             updateTransaksiInternetTable();
             updateDashboard();
-            alert('Pengeluaran berhasil disimpan!');
+            alert(`Pengeluaran berhasil disimpan dari ${getKasLabel(akunKas)}!`);
         }
 
         function updateTransaksiInternetTable() {
@@ -1205,6 +1343,7 @@
                 <tr>
                     <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-900">${formatDate(t.tanggal)}</td>
                     <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-900">${t.keterangan}</td>
+                    <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-600">${getKasLabel(t.akunKas || 'kas_tunai')}</td>
                     <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-900">${t.kategori || '-'}</td>
                     <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-green-600">${t.tipe === 'pendapatan' ? formatRupiah(t.jumlah) : '-'}</td>
                     <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-red-600">${t.tipe === 'pengeluaran' ? formatRupiah(t.jumlah) : '-'}</td>
@@ -1235,6 +1374,7 @@
             const formData = new FormData(e.target);
             const barangId = parseInt(formData.get('barang'));
             const jumlah = parseInt(formData.get('jumlah'));
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
             
             const barang = data.barang.find(b => b.id === barangId);
             if (!barang || barang.stok < jumlah) {
@@ -1249,12 +1389,13 @@
                 namaBarang: barang.nama,
                 jumlah: jumlah,
                 hargaSatuan: barang.hargaJual,
-                total: jumlah * barang.hargaJual
+                total: jumlah * barang.hargaJual,
+                akunKas: akunKas
             };
             
             data.penjualan.push(penjualan);
             barang.stok -= jumlah;
-            data.kas.kas_tunai += penjualan.total;
+            data.kas[akunKas] += penjualan.total;
             
             // Add to transaksi toko
             data.transaksi.toko.push({
@@ -1262,6 +1403,7 @@
                 tanggal: penjualan.tanggal,
                 keterangan: `Penjualan ${barang.nama}`,
                 jumlah: penjualan.total,
+                akunKas: akunKas,
                 tipe: 'pendapatan',
                 unit: 'toko'
             });
@@ -1269,7 +1411,7 @@
             e.target.reset();
             updateTokoData();
             updateDashboard();
-            alert('Penjualan berhasil disimpan!');
+            alert(`Penjualan berhasil disimpan ke ${getKasLabel(akunKas)}!`);
         }
 
         function handleUpdateStok(e) {
@@ -1365,43 +1507,57 @@
         function handlePendapatanSampah(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
+            const jumlah = parseInt(formData.get('jumlah'));
+            
             const transaksi = {
                 id: Date.now(),
                 tanggal: formData.get('tanggal'),
                 pelangganId: parseInt(formData.get('pelanggan')),
                 keterangan: formData.get('keterangan'),
-                jumlah: parseInt(formData.get('jumlah')),
+                jumlah: jumlah,
+                akunKas: akunKas,
                 tipe: 'pendapatan',
                 unit: 'sampah'
             };
             
             data.transaksi.sampah.push(transaksi);
-            data.kas.kas_tunai += transaksi.jumlah;
+            data.kas[akunKas] += jumlah;
             
             e.target.reset();
             updateDashboard();
-            alert('Pendapatan berhasil disimpan!');
+            alert(`Pendapatan berhasil disimpan ke ${getKasLabel(akunKas)}!`);
         }
 
         function handlePengeluaranSampah(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
+            const jumlah = parseInt(formData.get('jumlah'));
+            
+            // Cek saldo kas mencukupi
+            if (data.kas[akunKas] < jumlah) {
+                alert(`Saldo ${getKasLabel(akunKas)} tidak mencukupi! Saldo saat ini: ${formatRupiah(data.kas[akunKas])}`);
+                return;
+            }
+            
             const transaksi = {
                 id: Date.now(),
                 tanggal: formData.get('tanggal'),
                 keterangan: formData.get('keterangan'),
                 kategori: formData.get('kategori'),
-                jumlah: parseInt(formData.get('jumlah')),
+                jumlah: jumlah,
+                akunKas: akunKas,
                 tipe: 'pengeluaran',
                 unit: 'sampah'
             };
             
             data.transaksi.sampah.push(transaksi);
-            data.kas.kas_tunai -= transaksi.jumlah;
+            data.kas[akunKas] -= jumlah;
             
             e.target.reset();
             updateDashboard();
-            alert('Pengeluaran berhasil disimpan!');
+            alert(`Pengeluaran berhasil disimpan dari ${getKasLabel(akunKas)}!`);
         }
 
         function updateSampahData() {
@@ -1430,44 +1586,58 @@
         function handlePendapatanPangan(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
+            const jumlah = parseInt(formData.get('jumlah'));
+            
             const transaksi = {
                 id: Date.now(),
                 tanggal: formData.get('tanggal'),
                 keterangan: formData.get('keterangan'),
-                jumlah: parseInt(formData.get('jumlah')),
+                jumlah: jumlah,
+                akunKas: akunKas,
                 tipe: 'pendapatan',
                 unit: 'pangan'
             };
             
             data.transaksi.pangan.push(transaksi);
-            data.kas.kas_tunai += transaksi.jumlah;
+            data.kas[akunKas] += jumlah;
             
             e.target.reset();
             updateTransaksiPanganTable();
             updateDashboard();
-            alert('Pendapatan berhasil disimpan!');
+            alert(`Pendapatan berhasil disimpan ke ${getKasLabel(akunKas)}!`);
         }
 
         function handlePengeluaranPangan(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
+            const jumlah = parseInt(formData.get('jumlah'));
+            
+            // Cek saldo kas mencukupi
+            if (data.kas[akunKas] < jumlah) {
+                alert(`Saldo ${getKasLabel(akunKas)} tidak mencukupi! Saldo saat ini: ${formatRupiah(data.kas[akunKas])}`);
+                return;
+            }
+            
             const transaksi = {
                 id: Date.now(),
                 tanggal: formData.get('tanggal'),
                 keterangan: formData.get('keterangan'),
                 kategori: formData.get('kategori'),
-                jumlah: parseInt(formData.get('jumlah')),
+                jumlah: jumlah,
+                akunKas: akunKas,
                 tipe: 'pengeluaran',
                 unit: 'pangan'
             };
             
             data.transaksi.pangan.push(transaksi);
-            data.kas.kas_tunai -= transaksi.jumlah;
+            data.kas[akunKas] -= jumlah;
             
             e.target.reset();
             updateTransaksiPanganTable();
             updateDashboard();
-            alert('Pengeluaran berhasil disimpan!');
+            alert(`Pengeluaran berhasil disimpan dari ${getKasLabel(akunKas)}!`);
         }
 
         function updateTransaksiPanganTable() {
@@ -1487,15 +1657,44 @@
         function handleSaldoAwal(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const akun = formData.get('akun');
+            const jenisAkun = formData.get('jenisAkun');
             const saldo = parseInt(formData.get('saldo'));
             
-            data.kas[akun] = saldo;
+            const saldoAwalEntry = {
+                id: Date.now(),
+                tanggal: formData.get('tanggal'),
+                jenisAkun: jenisAkun,
+                akun: formData.get('akun') || null,
+                namaAkun: formData.get('namaAkun'),
+                saldo: saldo,
+                umurEkonomis: formData.get('umurEkonomis') ? parseInt(formData.get('umurEkonomis')) : null,
+                keterangan: formData.get('keterangan') || '',
+                penyusutanPerBulan: 0,
+                akumulasiPenyusutan: 0,
+                nilaiBuku: saldo
+            };
+
+            // Jika kas, update saldo kas
+            if (jenisAkun === 'kas' && saldoAwalEntry.akun) {
+                data.kas[saldoAwalEntry.akun] += saldo;
+            }
+
+            // Jika aset tetap yang bisa disusutkan, hitung penyusutan per bulan
+            if (saldoAwalEntry.umurEkonomis && saldoAwalEntry.umurEkonomis > 0) {
+                saldoAwalEntry.penyusutanPerBulan = saldo / (saldoAwalEntry.umurEkonomis * 12);
+            }
+
+            data.saldoAwal.push(saldoAwalEntry);
             
             e.target.reset();
             updateAdminData();
             updateDashboard();
-            alert('Saldo awal berhasil diset!');
+            
+            let message = 'Saldo awal berhasil disimpan!';
+            if (jenisAkun === 'kas') {
+                message += ` Kas ${getKasLabel(saldoAwalEntry.akun)} bertambah ${formatRupiah(saldo)}`;
+            }
+            alert(message);
         }
 
         function handleTambahModal(e) {
@@ -1562,6 +1761,7 @@
             
             let totalPenyusutanBulan = 0;
             
+            // Hitung penyusutan aset tetap dari pembelian
             data.asetTetap.forEach(aset => {
                 const tanggalBeli = new Date(aset.tanggal);
                 const periodePenyusutan = new Date(periode + '-01');
@@ -1586,6 +1786,34 @@
                     }
                 }
             });
+
+            // Hitung penyusutan saldo awal aset tetap
+            data.saldoAwal.forEach(saldo => {
+                if (saldo.penyusutanPerBulan > 0) {
+                    const tanggalSaldo = new Date(saldo.tanggal);
+                    const periodePenyusutan = new Date(periode + '-01');
+                    
+                    // Hitung penyusutan jika saldo awal sudah ada sebelum periode
+                    if (tanggalSaldo <= periodePenyusutan) {
+                        const penyusutanBulan = saldo.penyusutanPerBulan;
+                        
+                        // Cek apakah sudah mencapai batas umur ekonomis
+                        const bulanSejakSaldo = (periodePenyusutan.getFullYear() - tanggalSaldo.getFullYear()) * 12 + 
+                                              (periodePenyusutan.getMonth() - tanggalSaldo.getMonth());
+                        
+                        if (bulanSejakSaldo < saldo.umurEkonomis * 12) {
+                            totalPenyusutanBulan += penyusutanBulan;
+                            
+                            // Update akumulasi penyusutan dan nilai buku
+                            saldo.akumulasiPenyusutan = Math.min(
+                                saldo.akumulasiPenyusutan + penyusutanBulan,
+                                saldo.saldo
+                            );
+                            saldo.nilaiBuku = saldo.saldo - saldo.akumulasiPenyusutan;
+                        }
+                    }
+                }
+            });
             
             // Simpan penyusutan ke transaksi
             const penyusutanEntry = {
@@ -1605,6 +1833,32 @@
         }
 
         function updateAdminData() {
+            // Update saldo awal table
+            const saldoAwalTbody = document.getElementById('saldoAwalTable');
+            const jenisAkunLabels = {
+                kas: 'Kas & Setara Kas',
+                aset_lancar: 'Aset Lancar Lainnya',
+                peralatan: 'Peralatan',
+                bangunan: 'Bangunan',
+                kendaraan: 'Kendaraan',
+                tanah: 'Tanah',
+                aset_tetap_lain: 'Aset Tetap Lainnya'
+            };
+
+            saldoAwalTbody.innerHTML = data.saldoAwal.map(s => `
+                <tr>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatDate(s.tanggal)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${jenisAkunLabels[s.jenisAkun] || s.jenisAkun}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${s.namaAkun}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${s.akun ? getKasLabel(s.akun) : '-'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(s.saldo)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${s.umurEkonomis || '-'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${s.penyusutanPerBulan ? formatRupiah(s.penyusutanPerBulan) : '-'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(s.akumulasiPenyusutan)}</td>
+                    <td class="px-6 py-4 text-sm font-medium ${s.nilaiBuku > 0 ? 'text-green-600' : 'text-gray-500'}">${formatRupiah(s.nilaiBuku)}</td>
+                </tr>
+            `).join('');
+
             // Update aset tetap table
             const tbody = document.getElementById('asetTetapTable');
             tbody.innerHTML = data.asetTetap.map(a => `
@@ -1657,13 +1911,15 @@
 
             // Tambahkan beban penyusutan ke pengeluaran
             const totalPenyusutan = data.penyusutan.reduce((sum, p) => sum + p.totalPenyusutan, 0);
+            const totalPenyusutanSaldoAwal = data.saldoAwal.reduce((sum, s) => sum + s.akumulasiPenyusutan, 0);
             const totalPengeluaranDenganPenyusutan = totalPengeluaran + totalPenyusutan;
 
             const totalModal = data.modal.reduce((sum, m) => sum + m.jumlah, 0);
             const totalKas = Object.values(data.kas).reduce((sum, k) => sum + k, 0);
             const totalInventory = data.barang.reduce((sum, b) => sum + (b.stok * b.hargaBeli), 0);
             const totalAsetTetap = data.asetTetap.reduce((sum, a) => sum + a.nilaiBuku, 0);
-            const totalAset = totalKas + totalInventory + totalAsetTetap;
+            const totalSaldoAwalAset = data.saldoAwal.filter(s => s.jenisAkun !== 'kas').reduce((sum, s) => sum + s.nilaiBuku, 0);
+            const totalAset = totalKas + totalInventory + totalAsetTetap + totalSaldoAwalAset;
             const labaBersih = totalPendapatan - totalPengeluaranDenganPenyusutan;
 
             // Update dashboard cards
@@ -2049,6 +2305,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97083cf7b2f0b58d',t:'MTc1NTQyMzkyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9708a6de72f49a2b',t:'MTc1NTQyODI1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
