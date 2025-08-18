@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Laporan BUM Des CMMSC</title>
-    <meta name="description" content="Sistem Laporan Keuangan BUM Des CMMSC - Cikahuripan Makmur Mandiri Sejahtera Cikahuripan">
+    <meta name="description" content="Sistem Laporan Keuangan BUM Des CMMSC - Cikahuripan Makmur Mandiri Sejahtera">
     <meta name="author" content="BUM Des CMMSC">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -103,7 +103,7 @@
             
             <div class="mt-6 text-center text-xs text-gray-500">
                 <p>Email: cmmsc.cikahuripan@gmail.com</p>
-                <p>HP: 082125415593</p>
+                <p>HP: 082154127777</p>
             </div>
         </div>
     </div>
@@ -836,6 +836,32 @@
                             </div>
                         </div>
 
+                        <!-- Backup & Reset Data -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Backup & Reset Data</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Export Data</label>
+                                    <button onclick="exportData()" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                                        <i class="fas fa-download mr-2"></i>Download Backup
+                                    </button>
+                                    <p class="text-xs text-gray-500 mt-1">Simpan semua data ke file JSON</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Import Data</label>
+                                    <input type="file" id="importFile" accept=".json" onchange="importData(event)" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">Restore data dari file backup</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Reset Data</label>
+                                    <button onclick="resetData()" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition duration-200">
+                                        <i class="fas fa-trash mr-2"></i>Reset Semua
+                                    </button>
+                                    <p class="text-xs text-gray-500 mt-1">Hapus semua data (hati-hati!)</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Upload Gambar -->
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4">Upload Gambar</h3>
@@ -1079,7 +1105,9 @@
         let currentRole = null;
         let editingItem = null;
         let editingType = null;
-        let data = {
+        
+        // Default data structure
+        const defaultData = {
             users: {
                 admin: { password: 'admin123', role: 'admin' },
                 manager_internet: { password: 'internet123', role: 'manager_internet' },
@@ -1108,6 +1136,268 @@
             asetTetap: [],
             penyusutan: []
         };
+
+        // Load data from localStorage or use default
+        let data = loadData();
+
+        // Data persistence functions
+        function saveData() {
+            try {
+                const dataString = JSON.stringify(data);
+                const dataSize = new Blob([dataString]).size;
+                
+                // Check if data size is approaching localStorage limit (usually 5-10MB)
+                if (dataSize > 4 * 1024 * 1024) { // 4MB warning
+                    console.warn('Data mendekati batas penyimpanan browser. Pertimbangkan untuk export dan reset data lama.');
+                }
+                
+                localStorage.setItem('bumdes_cmmsc_data', dataString);
+                console.log('Data berhasil disimpan ke localStorage');
+                
+                // Show success indicator briefly
+                showNotification('Data tersimpan otomatis', 'success');
+            } catch (error) {
+                console.error('Error menyimpan data:', error);
+                
+                if (error.name === 'QuotaExceededError') {
+                    alert('Penyimpanan browser penuh! Silakan export data dan reset untuk melanjutkan.');
+                } else {
+                    alert('Gagal menyimpan data. Pastikan browser mendukung localStorage.');
+                }
+            }
+        }
+
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            // Remove existing notification
+            const existingNotification = document.getElementById('notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.id = 'notification';
+            notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white text-sm z-50 transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+            }`;
+            notification.textContent = message;
+
+            // Add to page
+            document.body.appendChild(notification);
+
+            // Auto remove after 2 seconds
+            setTimeout(() => {
+                if (notification && notification.parentNode) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }
+            }, 2000);
+        }
+
+        function loadData() {
+            try {
+                const savedData = localStorage.getItem('bumdes_cmmsc_data');
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    
+                    // Validate data structure
+                    if (!validateDataStructure(parsedData)) {
+                        console.warn('Struktur data tidak valid, menggunakan data default');
+                        showNotification('Data tersimpan tidak valid, menggunakan data default', 'warning');
+                        return JSON.parse(JSON.stringify(defaultData));
+                    }
+                    
+                    // Merge with default data to ensure all properties exist
+                    const mergedData = mergeWithDefault(parsedData, defaultData);
+                    
+                    // Check if backup reminder is needed (every 30 days)
+                    checkBackupReminder();
+                    
+                    return mergedData;
+                }
+            } catch (error) {
+                console.error('Error memuat data:', error);
+                showNotification('Data tersimpan rusak, menggunakan data default', 'error');
+            }
+            return JSON.parse(JSON.stringify(defaultData)); // Deep copy of default data
+        }
+
+        function validateDataStructure(data) {
+            const requiredKeys = ['users', 'kas', 'saldoAwal', 'modal', 'transaksi', 'barang', 'pelangganSampah', 'penjualan', 'asetTetap', 'penyusutan'];
+            
+            // Check if all required keys exist
+            for (const key of requiredKeys) {
+                if (!(key in data)) {
+                    return false;
+                }
+            }
+            
+            // Check if transaksi has required sub-objects
+            const requiredTransaksiKeys = ['internet', 'toko', 'sampah', 'pangan'];
+            for (const key of requiredTransaksiKeys) {
+                if (!(key in data.transaksi) || !Array.isArray(data.transaksi[key])) {
+                    return false;
+                }
+            }
+            
+            // Check if kas has required accounts
+            const requiredKasKeys = ['kas_tunai', 'kas_bjb', 'kas_bri', 'kas_mandiri', 'kas_dana'];
+            for (const key of requiredKasKeys) {
+                if (!(key in data.kas) || typeof data.kas[key] !== 'number') {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function checkBackupReminder() {
+            const lastBackupReminder = localStorage.getItem('bumdes_last_backup_reminder');
+            const now = new Date().getTime();
+            const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+            
+            if (!lastBackupReminder || (now - parseInt(lastBackupReminder)) > thirtyDaysInMs) {
+                setTimeout(() => {
+                    if (confirm('Sudah 30 hari sejak pengingat backup terakhir. Apakah Anda ingin membuat backup data sekarang?')) {
+                        exportData();
+                    }
+                    localStorage.setItem('bumdes_last_backup_reminder', now.toString());
+                }, 3000); // Show after 3 seconds
+            }
+        }
+
+        function mergeWithDefault(savedData, defaultData) {
+            const merged = JSON.parse(JSON.stringify(defaultData));
+            
+            // Merge each property
+            Object.keys(savedData).forEach(key => {
+                if (savedData[key] !== null && savedData[key] !== undefined) {
+                    if (typeof savedData[key] === 'object' && !Array.isArray(savedData[key])) {
+                        merged[key] = { ...merged[key], ...savedData[key] };
+                    } else {
+                        merged[key] = savedData[key];
+                    }
+                }
+            });
+            
+            return merged;
+        }
+
+        function resetData() {
+            if (confirm('Yakin ingin menghapus SEMUA data dan kembali ke pengaturan awal? Tindakan ini tidak dapat dibatalkan!')) {
+                localStorage.removeItem('bumdes_cmmsc_data');
+                data = JSON.parse(JSON.stringify(defaultData));
+                alert('Semua data telah dihapus. Halaman akan dimuat ulang.');
+                location.reload();
+            }
+        }
+
+        function exportData() {
+            try {
+                // Add metadata to export
+                const exportData = {
+                    metadata: {
+                        exportDate: new Date().toISOString(),
+                        version: '1.0',
+                        source: 'BUMDes CMMSC System'
+                    },
+                    data: data
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `bumdes_cmmsc_backup_${new Date().toISOString().split('T')[0]}.json`;
+                
+                // Add to document and click
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showNotification('Data berhasil diekspor!', 'success');
+                
+                // Update last backup reminder
+                localStorage.setItem('bumdes_last_backup_reminder', new Date().getTime().toString());
+            } catch (error) {
+                console.error('Error mengekspor data:', error);
+                showNotification('Gagal mengekspor data', 'error');
+            }
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!file.name.endsWith('.json')) {
+                showNotification('File harus berformat JSON', 'error');
+                event.target.value = ''; // Reset input
+                return;
+            }
+
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('File terlalu besar (maksimal 10MB)', 'error');
+                event.target.value = ''; // Reset input
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedFile = JSON.parse(e.target.result);
+                    let importedData;
+                    
+                    // Check if it's new format with metadata or old format
+                    if (importedFile.metadata && importedFile.data) {
+                        importedData = importedFile.data;
+                        console.log('Importing data from:', importedFile.metadata.exportDate);
+                    } else {
+                        importedData = importedFile;
+                    }
+                    
+                    // Validate imported data structure
+                    if (!validateDataStructure(importedData)) {
+                        showNotification('File backup tidak valid atau rusak', 'error');
+                        event.target.value = ''; // Reset input
+                        return;
+                    }
+                    
+                    if (confirm('Yakin ingin mengganti semua data dengan data yang diimpor? Data saat ini akan hilang!')) {
+                        data = mergeWithDefault(importedData, defaultData);
+                        saveData();
+                        showNotification('Data berhasil diimpor! Halaman akan dimuat ulang.', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    }
+                } catch (error) {
+                    console.error('Error mengimpor data:', error);
+                    showNotification('File tidak valid atau rusak', 'error');
+                }
+                
+                // Reset input regardless of outcome
+                event.target.value = '';
+            };
+            
+            reader.onerror = function() {
+                showNotification('Gagal membaca file', 'error');
+                event.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
 
         // Menu Configuration
         const menuConfig = {
@@ -1341,6 +1631,7 @@
             data.transaksi.internet.push(transaksi);
             data.kas[akunKas] += jumlah; // Update kas sesuai akun yang dipilih
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateTransaksiInternetTable();
             updateDashboard();
@@ -1373,6 +1664,7 @@
             data.transaksi.internet.push(transaksi);
             data.kas[akunKas] -= jumlah; // Kurangi kas sesuai akun yang dipilih
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateTransaksiInternetTable();
             updateDashboard();
@@ -1416,6 +1708,7 @@
             };
             
             data.barang.push(barang);
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateTokoData();
             alert('Barang berhasil ditambahkan!');
@@ -1460,6 +1753,7 @@
                 unit: 'toko'
             });
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateTokoData();
             updateDashboard();
@@ -1475,6 +1769,7 @@
             const barang = data.barang.find(b => b.id === barangId);
             if (barang) {
                 barang.stok += tambahStok;
+                saveData(); // Simpan ke localStorage
                 e.target.reset();
                 updateTokoData();
                 alert('Stok berhasil diupdate!');
@@ -1561,6 +1856,7 @@
             };
             
             data.pelangganSampah.push(pelanggan);
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateSampahData();
             alert('Pelanggan berhasil ditambahkan!');
@@ -1586,6 +1882,7 @@
             data.transaksi.sampah.push(transaksi);
             data.kas[akunKas] += jumlah;
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateDashboard();
             alert(`Pendapatan berhasil disimpan ke ${getKasLabel(akunKas)}!`);
@@ -1617,6 +1914,7 @@
             data.transaksi.sampah.push(transaksi);
             data.kas[akunKas] -= jumlah;
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateDashboard();
             alert(`Pengeluaran berhasil disimpan dari ${getKasLabel(akunKas)}!`);
@@ -1674,6 +1972,7 @@
             data.transaksi.pangan.push(transaksi);
             data.kas[akunKas] += jumlah;
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateTransaksiPanganTable();
             updateDashboard();
@@ -1706,6 +2005,7 @@
             data.transaksi.pangan.push(transaksi);
             data.kas[akunKas] -= jumlah;
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateTransaksiPanganTable();
             updateDashboard();
@@ -1768,6 +2068,7 @@
 
             data.saldoAwal.push(saldoAwalEntry);
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateAdminData();
             updateDashboard();
@@ -1795,6 +2096,7 @@
             data.modal.push(modal);
             data.kas[akunKas] += modal.jumlah;
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateAdminData();
             updateDashboard();
@@ -1830,6 +2132,7 @@
             data.asetTetap.push(aset);
             data.kas[akunKas] -= harga; // Kurangi kas sesuai akun yang dipilih
             
+            saveData(); // Simpan ke localStorage
             e.target.reset();
             updateAdminData();
             updateDashboard();
@@ -1907,6 +2210,7 @@
             
             data.penyusutan.push(penyusutanEntry);
             
+            saveData(); // Simpan ke localStorage
             // Update display
             document.getElementById('totalPenyusutanBulan').textContent = formatRupiah(totalPenyusutanBulan);
             updateAdminData();
@@ -2698,6 +3002,7 @@
                 updateAdminData();
             }
 
+            saveData(); // Simpan semua perubahan ke localStorage
             closeEditModal();
             updateDashboard();
             alert('Data berhasil diupdate!');
@@ -2720,6 +3025,7 @@
             // Remove from array
             data.transaksi[unit] = data.transaksi[unit].filter(t => t.id != id);
 
+            saveData(); // Simpan perubahan ke localStorage
             if (unit === 'internet') updateTransaksiInternetTable();
             if (unit === 'pangan') updateTransaksiPanganTable();
             updateDashboard();
@@ -2729,6 +3035,7 @@
         function deleteBarang(id) {
             if (!confirm('Yakin ingin menghapus barang ini?')) return;
             data.barang = data.barang.filter(b => b.id != id);
+            saveData(); // Simpan perubahan ke localStorage
             updateTokoData();
             alert('Barang berhasil dihapus!');
         }
@@ -2736,6 +3043,7 @@
         function deletePelangganSampah(id) {
             if (!confirm('Yakin ingin menghapus pelanggan ini?')) return;
             data.pelangganSampah = data.pelangganSampah.filter(p => p.id != id);
+            saveData(); // Simpan perubahan ke localStorage
             updateSampahData();
             alert('Pelanggan berhasil dihapus!');
         }
@@ -2749,6 +3057,7 @@
             }
             
             data.saldoAwal = data.saldoAwal.filter(s => s.id != id);
+            saveData(); // Simpan perubahan ke localStorage
             updateAdminData();
             updateDashboard();
             alert('Saldo awal berhasil dihapus!');
@@ -2763,6 +3072,7 @@
             }
             
             data.asetTetap = data.asetTetap.filter(a => a.id != id);
+            saveData(); // Simpan perubahan ke localStorage
             updateAdminData();
             updateDashboard();
             alert('Aset tetap berhasil dihapus!');
@@ -2783,6 +3093,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9708df0e66d7e785',t:'MTc1NTQzMDU2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'970b55e061deea7a',t:'MTc1NTQ1NjM5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
