@@ -93,7 +93,6 @@
                         <option value="manager_toko">Manager Toko BUMDes</option>
                         <option value="manager_sampah">Manager Unit Sampah</option>
                         <option value="manager_pangan">Manager Ketahanan Pangan</option>
-                         <option value="manager_pangan">Manager Penyewaan Kios</option>
                     </select>
                 </div>
                 
@@ -895,6 +894,11 @@
                                                 <option value="fas fa-leaf">🌿 Organik</option>
                                                 <option value="fas fa-tools">🔧 Jasa</option>
                                                 <option value="fas fa-shopping-bag">🛍️ Retail</option>
+                                                <option value="fas fa-store">🏪 Kios/Lapak</option>
+                                                <option value="fas fa-shopping-cart">🛒 Lapak Kaki 5</option>
+                                                <option value="fas fa-futbol">⚽ Lapangan Olahraga</option>
+                                                <option value="fas fa-building">🏢 Penyewaan</option>
+                                                <option value="fas fa-warehouse">🏭 Gudang</option>
                                             </select>
                                         </div>
                                         <div>
@@ -1081,6 +1085,8 @@
                         </div>
                     </div>
 
+                    <!-- Dynamic Unit Sections will be inserted here -->
+                    
                     <!-- Laporan -->
                     <div id="laporan" class="content-section hidden">
                         <div class="mb-6 no-print">
@@ -1587,7 +1593,8 @@
                 'sampah': 'unitSampah',
                 'pangan': 'unitPangan'
             };
-            return sectionMap[unitId] || `unit${unitId.charAt(0).toUpperCase() + unitId.slice(1)}`;
+            // For new units, create dynamic section ID
+            return sectionMap[unitId] || `unitDynamic_${unitId}`;
         }
 
         // Utility Functions
@@ -1642,6 +1649,296 @@
             document.getElementById('loginForm').reset();
         });
 
+        // Create Dynamic Unit Section
+        function createDynamicUnitSection(unit) {
+            const sectionId = `unitDynamic_${unit.id}`;
+            const contentDiv = document.getElementById('content');
+            
+            // Check if section already exists
+            if (document.getElementById(sectionId)) return;
+            
+            let sectionHTML = '';
+            
+            // Special handling for Penyewaan Lapangan with booking system
+            if (unit.id.toLowerCase().includes('lapangan')) {
+                sectionHTML = createLapanganSection(unit, sectionId);
+            } else {
+                // Standard unit section for other units
+                sectionHTML = createStandardUnitSection(unit, sectionId);
+            }
+            
+            // Insert before laporan section
+            const laporanSection = document.getElementById('laporan');
+            laporanSection.insertAdjacentHTML('beforebegin', sectionHTML);
+            
+            // Initialize forms for this unit
+            initializeDynamicUnitForms(unit.id);
+        }
+
+        function createLapanganSection(unit, sectionId) {
+            return `
+                <div id="${sectionId}" class="content-section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">${unit.nama}</h2>
+                        <p class="text-gray-600">${unit.deskripsi || 'Kelola booking dan pendapatan penyewaan lapangan'}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Form Booking -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Booking Lapangan</h3>
+                            <form id="bookingForm_${unit.id}" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Booking</label>
+                                    <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jam Mulai</label>
+                                    <input type="time" name="jamMulai" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jam Selesai</label>
+                                    <input type="time" name="jamSelesai" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Penyewa</label>
+                                    <input type="text" name="namaPenyewa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Nama lengkap penyewa" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">No. HP</label>
+                                    <input type="tel" name="noHp" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="08xxxxxxxxxx" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Keperluan</label>
+                                    <select name="keperluan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                        <option value="">Pilih Keperluan</option>
+                                        <option value="olahraga">Olahraga</option>
+                                        <option value="acara">Acara/Event</option>
+                                        <option value="latihan">Latihan</option>
+                                        <option value="lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tarif per Jam</label>
+                                    <input type="number" name="tarifPerJam" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="50000" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Total Biaya</label>
+                                    <input type="number" name="totalBiaya" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+                                </div>
+                                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                                    <i class="fas fa-calendar-plus mr-2"></i>Buat Booking
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Form Pembayaran -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Input Pembayaran</h3>
+                            <form id="pembayaranForm_${unit.id}" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Booking</label>
+                                    <select name="bookingId" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                        <option value="">Pilih Booking</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Metode Pembayaran</label>
+                                    <select name="akunKas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                        <option value="">Pilih Metode</option>
+                                        <option value="kas_tunai">💰 Tunai</option>
+                                        <option value="kas_bjb">🏦 Transfer Bank BJB</option>
+                                        <option value="kas_bri">🏦 Transfer Bank BRI</option>
+                                        <option value="kas_mandiri">🏦 Transfer Bank Mandiri</option>
+                                        <option value="kas_dana">📱 Transfer DANA</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah Bayar</label>
+                                    <input type="number" name="jumlahBayar" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                                    <input type="text" name="keterangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" placeholder="Keterangan pembayaran">
+                                </div>
+                                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                                    <i class="fas fa-money-bill-wave mr-2"></i>Simpan Pembayaran
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Status Booking Hari Ini -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Booking Hari Ini</h3>
+                            <div id="bookingHariIni_${unit.id}" class="space-y-3">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Booking -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Daftar Booking</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jam</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penyewa</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. HP</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keperluan</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Biaya</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingTable_${unit.id}" class="divide-y divide-gray-200">
+                                    <!-- Data akan diisi oleh JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Transaksi -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Riwayat Transaksi ${unit.nama}</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Metode Bayar</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pendapatan</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transaksiTable_${unit.id}" class="divide-y divide-gray-200">
+                                    <!-- Data akan diisi oleh JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createStandardUnitSection(unit, sectionId) {
+            return `
+                <div id="${sectionId}" class="content-section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">${unit.nama}</h2>
+                        <p class="text-gray-600">${unit.deskripsi || 'Kelola pendapatan dan pengeluaran unit usaha'}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Form Pendapatan -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Input Pendapatan</h3>
+                            <form id="pendapatanForm_${unit.id}" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                                    <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Akun Kas Tujuan</label>
+                                    <select name="akunKas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" required>
+                                        <option value="kas_tunai">Kas Tunai Bendahara</option>
+                                        <option value="kas_bjb">Kas di Bank BJB</option>
+                                        <option value="kas_bri">Kas di Bank BRI</option>
+                                        <option value="kas_mandiri">Kas di Bank Mandiri</option>
+                                        <option value="kas_dana">Kas di Akun DANA</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                                    <input type="text" name="keterangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" placeholder="Keterangan pendapatan" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah (Rp)</label>
+                                    <input type="number" name="jumlah" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" placeholder="0" required>
+                                </div>
+                                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                                    Simpan Pendapatan
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Form Pengeluaran -->
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Input Pengeluaran</h3>
+                            <form id="pengeluaranForm_${unit.id}" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                                    <input type="date" name="tanggal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Akun Kas Sumber</label>
+                                    <select name="akunKas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                        <option value="kas_tunai">Kas Tunai Bendahara</option>
+                                        <option value="kas_bjb">Kas di Bank BJB</option>
+                                        <option value="kas_bri">Kas di Bank BRI</option>
+                                        <option value="kas_mandiri">Kas di Bank Mandiri</option>
+                                        <option value="kas_dana">Kas di Akun DANA</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                                    <input type="text" name="keterangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" placeholder="Keterangan pengeluaran" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                                    <select name="kategori" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" required>
+                                        <option value="">Pilih Kategori</option>
+                                        <option value="operasional">Operasional</option>
+                                        <option value="maintenance">Maintenance</option>
+                                        <option value="lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah (Rp)</label>
+                                    <input type="number" name="jumlah" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" placeholder="0" required>
+                                </div>
+                                <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition duration-200">
+                                    Simpan Pengeluaran
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Transaksi -->
+                    <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Riwayat Transaksi ${unit.nama}</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Akun Kas</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pendapatan</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pengeluaran</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transaksiTable_${unit.id}" class="divide-y divide-gray-200">
+                                    <!-- Data akan diisi oleh JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         // Initialize App
         function initializeApp() {
             buildSidebar();
@@ -1671,7 +1968,21 @@
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.add('hidden');
             });
-            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Check if section exists, if not create it for dynamic units
+            let targetSection = document.getElementById(sectionId);
+            if (!targetSection && sectionId.startsWith('unitDynamic_')) {
+                const unitId = sectionId.replace('unitDynamic_', '');
+                const unit = data.unitUsaha.find(u => u.id === unitId);
+                if (unit) {
+                    createDynamicUnitSection(unit);
+                    targetSection = document.getElementById(sectionId);
+                }
+            }
+            
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
             
             // Update active menu
             document.querySelectorAll('#sidebarMenu button').forEach(btn => {
@@ -1690,6 +2001,362 @@
             if (sectionId === 'tokoBumdes') updateTokoData();
             if (sectionId === 'unitSampah') updateSampahData();
             if (sectionId === 'adminPanel') updateAdminData();
+            if (sectionId.startsWith('unitDynamic_')) {
+                const unitId = sectionId.replace('unitDynamic_', '');
+                updateDynamicUnitData(unitId);
+            }
+        }
+
+        // Initialize Dynamic Unit Forms
+        function initializeDynamicUnitForms(unitId) {
+            // Initialize booking form for lapangan units
+            if (unitId.toLowerCase().includes('lapangan')) {
+                const bookingForm = document.getElementById(`bookingForm_${unitId}`);
+                const pembayaranForm = document.getElementById(`pembayaranForm_${unitId}`);
+                
+                if (bookingForm) {
+                    bookingForm.addEventListener('submit', (e) => handleBookingLapangan(e, unitId));
+                    
+                    // Auto calculate total cost
+                    const jamMulaiInput = bookingForm.querySelector('input[name="jamMulai"]');
+                    const jamSelesaiInput = bookingForm.querySelector('input[name="jamSelesai"]');
+                    const tarifInput = bookingForm.querySelector('input[name="tarifPerJam"]');
+                    const totalInput = bookingForm.querySelector('input[name="totalBiaya"]');
+                    
+                    function calculateTotal() {
+                        const jamMulai = jamMulaiInput.value;
+                        const jamSelesai = jamSelesaiInput.value;
+                        const tarif = parseInt(tarifInput.value) || 0;
+                        
+                        if (jamMulai && jamSelesai && tarif) {
+                            const mulai = new Date(`2000-01-01 ${jamMulai}`);
+                            const selesai = new Date(`2000-01-01 ${jamSelesai}`);
+                            const durasi = (selesai - mulai) / (1000 * 60 * 60); // in hours
+                            
+                            if (durasi > 0) {
+                                totalInput.value = durasi * tarif;
+                            }
+                        }
+                    }
+                    
+                    jamMulaiInput.addEventListener('change', calculateTotal);
+                    jamSelesaiInput.addEventListener('change', calculateTotal);
+                    tarifInput.addEventListener('input', calculateTotal);
+                }
+                
+                if (pembayaranForm) {
+                    pembayaranForm.addEventListener('submit', (e) => handlePembayaranLapangan(e, unitId));
+                }
+            } else {
+                // Initialize standard forms for other units
+                const pendapatanForm = document.getElementById(`pendapatanForm_${unitId}`);
+                const pengeluaranForm = document.getElementById(`pengeluaranForm_${unitId}`);
+                
+                if (pendapatanForm) {
+                    pendapatanForm.addEventListener('submit', (e) => handlePendapatanDynamic(e, unitId));
+                }
+                
+                if (pengeluaranForm) {
+                    pengeluaranForm.addEventListener('submit', (e) => handlePengeluaranDynamic(e, unitId));
+                }
+            }
+            
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            const unitSection = document.getElementById(`unitDynamic_${unitId}`);
+            if (unitSection) {
+                unitSection.querySelectorAll('input[type="date"]').forEach(input => {
+                    if (!input.value) input.value = today;
+                });
+            }
+        }
+
+        // Dynamic Unit Handlers
+        function handleBookingLapangan(e, unitId) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const booking = {
+                id: Date.now(),
+                unitId: unitId,
+                tanggal: formData.get('tanggal'),
+                jamMulai: formData.get('jamMulai'),
+                jamSelesai: formData.get('jamSelesai'),
+                namaPenyewa: formData.get('namaPenyewa'),
+                noHp: formData.get('noHp'),
+                keperluan: formData.get('keperluan'),
+                tarifPerJam: parseInt(formData.get('tarifPerJam')),
+                totalBiaya: parseInt(formData.get('totalBiaya')),
+                status: 'booking',
+                tanggalBooking: new Date().toISOString().split('T')[0]
+            };
+            
+            // Initialize booking array if not exists
+            if (!data.booking) data.booking = {};
+            if (!data.booking[unitId]) data.booking[unitId] = [];
+            
+            data.booking[unitId].push(booking);
+            saveData();
+            e.target.reset();
+            updateDynamicUnitData(unitId);
+            alert('Booking berhasil dibuat!');
+        }
+
+        function handlePembayaranLapangan(e, unitId) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const bookingId = parseInt(formData.get('bookingId'));
+            const akunKas = formData.get('akunKas');
+            const jumlahBayar = parseInt(formData.get('jumlahBayar'));
+            
+            // Find booking
+            const booking = data.booking[unitId]?.find(b => b.id === bookingId);
+            if (!booking) {
+                alert('Booking tidak ditemukan!');
+                return;
+            }
+            
+            // Update booking status
+            booking.status = 'lunas';
+            booking.tanggalBayar = new Date().toISOString().split('T')[0];
+            booking.metodeBayar = akunKas;
+            booking.jumlahBayar = jumlahBayar;
+            
+            // Add to kas
+            data.kas[akunKas] += jumlahBayar;
+            
+            // Add to transaksi
+            if (!data.transaksi[unitId]) data.transaksi[unitId] = [];
+            
+            const transaksi = {
+                id: Date.now(),
+                tanggal: booking.tanggalBayar,
+                keterangan: `Pembayaran sewa lapangan - ${booking.namaPenyewa}`,
+                jumlah: jumlahBayar,
+                akunKas: akunKas,
+                tipe: 'pendapatan',
+                unit: unitId,
+                bookingId: bookingId
+            };
+            
+            data.transaksi[unitId].push(transaksi);
+            
+            saveData();
+            e.target.reset();
+            updateDynamicUnitData(unitId);
+            updateDashboard();
+            alert(`Pembayaran berhasil disimpan ke ${getKasLabel(akunKas)}!`);
+        }
+
+        function handlePendapatanDynamic(e, unitId) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
+            const jumlah = parseInt(formData.get('jumlah'));
+            
+            const transaksi = {
+                id: Date.now(),
+                tanggal: formData.get('tanggal'),
+                keterangan: formData.get('keterangan'),
+                jumlah: jumlah,
+                akunKas: akunKas,
+                tipe: 'pendapatan',
+                unit: unitId
+            };
+            
+            if (!data.transaksi[unitId]) data.transaksi[unitId] = [];
+            data.transaksi[unitId].push(transaksi);
+            data.kas[akunKas] += jumlah;
+            
+            saveData();
+            e.target.reset();
+            updateDynamicUnitData(unitId);
+            updateDashboard();
+            alert(`Pendapatan berhasil disimpan ke ${getKasLabel(akunKas)}!`);
+        }
+
+        function handlePengeluaranDynamic(e, unitId) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const akunKas = formData.get('akunKas') || 'kas_tunai';
+            const jumlah = parseInt(formData.get('jumlah'));
+            
+            if (data.kas[akunKas] < jumlah) {
+                alert(`Saldo ${getKasLabel(akunKas)} tidak mencukupi! Saldo saat ini: ${formatRupiah(data.kas[akunKas])}`);
+                return;
+            }
+            
+            const transaksi = {
+                id: Date.now(),
+                tanggal: formData.get('tanggal'),
+                keterangan: formData.get('keterangan'),
+                kategori: formData.get('kategori'),
+                jumlah: jumlah,
+                akunKas: akunKas,
+                tipe: 'pengeluaran',
+                unit: unitId
+            };
+            
+            if (!data.transaksi[unitId]) data.transaksi[unitId] = [];
+            data.transaksi[unitId].push(transaksi);
+            data.kas[akunKas] -= jumlah;
+            
+            saveData();
+            e.target.reset();
+            updateDynamicUnitData(unitId);
+            updateDashboard();
+            alert(`Pengeluaran berhasil disimpan dari ${getKasLabel(akunKas)}!`);
+        }
+
+        function updateDynamicUnitData(unitId) {
+            const unit = data.unitUsaha.find(u => u.id === unitId);
+            if (!unit) return;
+            
+            // Update for lapangan units
+            if (unitId.toLowerCase().includes('lapangan')) {
+                updateBookingData(unitId);
+            }
+            
+            // Update transaksi table
+            updateTransaksiDynamicTable(unitId);
+        }
+
+        function updateBookingData(unitId) {
+            if (!data.booking || !data.booking[unitId]) return;
+            
+            const bookings = data.booking[unitId];
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Update booking table
+            const bookingTable = document.getElementById(`bookingTable_${unitId}`);
+            if (bookingTable) {
+                bookingTable.innerHTML = bookings.map(b => `
+                    <tr>
+                        <td class="px-6 py-4 text-sm text-gray-900">${formatDate(b.tanggal)}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${b.jamMulai} - ${b.jamSelesai}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${b.namaPenyewa}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${b.noHp}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${b.keperluan}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${formatRupiah(b.totalBiaya)}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs rounded-full ${b.status === 'lunas' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                ${b.status === 'lunas' ? 'Lunas' : 'Booking'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            <div class="flex space-x-2">
+                                <button onclick="editBooking('${b.id}', '${unitId}')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteBooking('${b.id}', '${unitId}')" class="text-red-600 hover:text-red-800 touch-button">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Update booking hari ini
+            const bookingHariIni = document.getElementById(`bookingHariIni_${unitId}`);
+            if (bookingHariIni) {
+                const todayBookings = bookings.filter(b => b.tanggal === today);
+                bookingHariIni.innerHTML = todayBookings.length > 0 ? 
+                    todayBookings.map(b => `
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium text-gray-800">${b.jamMulai} - ${b.jamSelesai}</p>
+                                    <p class="text-sm text-gray-600">${b.namaPenyewa}</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs rounded-full ${b.status === 'lunas' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                    ${b.status === 'lunas' ? 'Lunas' : 'Booking'}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('') : 
+                    '<p class="text-gray-500 text-center">Tidak ada booking hari ini</p>';
+            }
+            
+            // Update pembayaran select
+            const pembayaranSelect = document.querySelector(`#pembayaranForm_${unitId} select[name="bookingId"]`);
+            if (pembayaranSelect) {
+                const unpaidBookings = bookings.filter(b => b.status === 'booking');
+                pembayaranSelect.innerHTML = '<option value="">Pilih Booking</option>' + 
+                    unpaidBookings.map(b => `
+                        <option value="${b.id}">${formatDate(b.tanggal)} - ${b.jamMulai}-${b.jamSelesai} - ${b.namaPenyewa} (${formatRupiah(b.totalBiaya)})</option>
+                    `).join('');
+            }
+        }
+
+        function updateTransaksiDynamicTable(unitId) {
+            const transaksiTable = document.getElementById(`transaksiTable_${unitId}`);
+            if (!transaksiTable || !data.transaksi[unitId]) return;
+            
+            const transaksi = data.transaksi[unitId];
+            const unit = data.unitUsaha.find(u => u.id === unitId);
+            const isLapangan = unitId.toLowerCase().includes('lapangan');
+            
+            if (isLapangan) {
+                // Lapangan table (only pendapatan)
+                transaksiTable.innerHTML = transaksi.map(t => `
+                    <tr>
+                        <td class="px-6 py-4 text-sm text-gray-900">${formatDate(t.tanggal)}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${t.keterangan}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${getKasLabel(t.akunKas || 'kas_tunai')}</td>
+                        <td class="px-6 py-4 text-sm text-green-600">${formatRupiah(t.jumlah)}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <div class="flex space-x-2">
+                                <button onclick="editTransaksi('${t.id}', '${unitId}')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteTransaksi('${t.id}', '${unitId}')" class="text-red-600 hover:text-red-800 touch-button">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                // Standard table (pendapatan & pengeluaran)
+                transaksiTable.innerHTML = transaksi.map(t => `
+                    <tr>
+                        <td class="px-6 py-4 text-sm text-gray-900">${formatDate(t.tanggal)}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${t.keterangan}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${getKasLabel(t.akunKas || 'kas_tunai')}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${t.kategori || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-green-600">${t.tipe === 'pendapatan' ? formatRupiah(t.jumlah) : '-'}</td>
+                        <td class="px-6 py-4 text-sm text-red-600">${t.tipe === 'pengeluaran' ? formatRupiah(t.jumlah) : '-'}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <div class="flex space-x-2">
+                                <button onclick="editTransaksi('${t.id}', '${unitId}')" class="text-blue-600 hover:text-blue-800 touch-button">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteTransaksi('${t.id}', '${unitId}')" class="text-red-600 hover:text-red-800 touch-button">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Booking management functions
+        function editBooking(id, unitId) {
+            // Implementation for editing booking
+            alert('Fitur edit booking akan segera tersedia');
+        }
+
+        function deleteBooking(id, unitId) {
+            if (!confirm('Yakin ingin menghapus booking ini?')) return;
+            
+            if (data.booking && data.booking[unitId]) {
+                data.booking[unitId] = data.booking[unitId].filter(b => b.id != id);
+                saveData();
+                updateDynamicUnitData(unitId);
+                alert('Booking berhasil dihapus!');
+            }
         }
 
         // Initialize Forms
@@ -2655,19 +3322,30 @@
 
         // Dashboard Update
         function updateDashboard() {
-            // Calculate totals
-            const totalPendapatan = [
+            // Calculate totals including dynamic units
+            let allPendapatan = [
                 ...data.transaksi.internet.filter(t => t.tipe === 'pendapatan'),
                 ...data.transaksi.toko,
                 ...data.transaksi.sampah.filter(t => t.tipe === 'pendapatan'),
                 ...data.transaksi.pangan.filter(t => t.tipe === 'pendapatan')
-            ].reduce((sum, t) => sum + t.jumlah, 0);
+            ];
 
-            const totalPengeluaran = [
+            let allPengeluaran = [
                 ...data.transaksi.internet.filter(t => t.tipe === 'pengeluaran'),
                 ...data.transaksi.sampah.filter(t => t.tipe === 'pengeluaran'),
                 ...data.transaksi.pangan.filter(t => t.tipe === 'pengeluaran')
-            ].reduce((sum, t) => sum + t.jumlah, 0);
+            ];
+
+            // Add dynamic units transactions
+            data.unitUsaha.forEach(unit => {
+                if (!['internet', 'toko', 'sampah', 'pangan'].includes(unit.id) && data.transaksi[unit.id]) {
+                    allPendapatan.push(...data.transaksi[unit.id].filter(t => t.tipe === 'pendapatan'));
+                    allPengeluaran.push(...data.transaksi[unit.id].filter(t => t.tipe === 'pengeluaran'));
+                }
+            });
+
+            const totalPendapatan = allPendapatan.reduce((sum, t) => sum + t.jumlah, 0);
+            const totalPengeluaran = allPengeluaran.reduce((sum, t) => sum + t.jumlah, 0);
 
             // Tambahkan beban penyusutan ke pengeluaran
             const totalPenyusutan = data.penyusutan.reduce((sum, p) => sum + p.totalPenyusutan, 0);
@@ -2713,6 +3391,14 @@
                 'Unit Sampah': data.transaksi.sampah.filter(t => t.tipe === 'pendapatan').reduce((sum, t) => sum + t.jumlah, 0),
                 'Unit Pangan': data.transaksi.pangan.filter(t => t.tipe === 'pendapatan').reduce((sum, t) => sum + t.jumlah, 0)
             };
+
+            // Add dynamic units to pendapatan calculation
+            data.unitUsaha.forEach(unit => {
+                if (!['internet', 'toko', 'sampah', 'pangan'].includes(unit.id) && data.transaksi[unit.id]) {
+                    const pendapatan = data.transaksi[unit.id].filter(t => t.tipe === 'pendapatan').reduce((sum, t) => sum + t.jumlah, 0);
+                    unitPendapatan[unit.nama] = pendapatan;
+                }
+            });
 
             pendapatanPerUnit.innerHTML = Object.entries(unitPendapatan).map(([unit, pendapatan]) => `
                 <div class="flex justify-between items-center">
@@ -3447,6 +4133,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'970d8132f2c7b5a8',t:'MTc1NTQ3OTE0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'970e186667c79de3',t:'MTc1NTQ4NTMzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
